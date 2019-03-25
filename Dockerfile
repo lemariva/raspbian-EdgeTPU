@@ -19,7 +19,7 @@ ENV CONFIG_PATH="/root/.jupyter/jupyter_notebook_config.py"
 
 #copy files
 RUN mkdir /notebooks
-COPY "./lib/*" /notebooks
+COPY "./examples/*" /notebooks/
 COPY "./conf/jupyter_notebook_config.py" ${CONFIG_PATH}
 
 #setting execute flags
@@ -35,7 +35,7 @@ RUN apt-get update \
 
 #install libraries
 RUN apt-get install -y wget build-essential python3-dev python3-pip feh pkg-config python-tk \
-    && apt-get install libraspberrypi0 libraspberrypi-dev libraspberrypi-doc libraspberrypi-bin libfreetype6-dev libxml2
+    && apt-get install libraspberrypi0 libraspberrypi-dev libraspberrypi-doc libraspberrypi-bin libfreetype6-dev libxml2 libopenjp2-7
 
 #python libraries
 RUN python3 -m pip install setuptools wheel \
@@ -49,6 +49,7 @@ WORKDIR /opt
 RUN wget http://storage.googleapis.com/cloud-iot-edge-pretrained-models/edgetpu_api.tar.gz \
     && tar xzf edgetpu_api.tar.gz \
     && rm edgetpu_api.tar.gz
+    
 #trick platform recognizer 
 COPY "./conf/platform_recognizer.sh" /opt/python-tflite-source/platform_recognizer.sh
 #installing library
@@ -58,7 +59,9 @@ RUN cd python-tflite-source/ \
 #loading pretrained models
 WORKDIR /notebooks
 RUN wget -P test_data/ https://storage.googleapis.com/cloud-iot-edge-pretrained-models/canned_models/mobilenet_v2_1.0_224_quant_edgetpu.tflite \
-    && wget -P test_data/ http://storage.googleapis.com/cloud-iot-edge-pretrained-models/canned_models/imagenet_labels.txt
+    && wget -P test_data/ http://storage.googleapis.com/cloud-iot-edge-pretrained-models/canned_models/imagenet_labels.txt \
+    && tar xzf examples_edgetpu.tar.xz \
+    && rm examples_edgetpu.tar.xz 
 
 #copy supervisord files
 COPY "./conf/supervisord.conf" /etc/supervisor/conf.d/supervisord.conf
