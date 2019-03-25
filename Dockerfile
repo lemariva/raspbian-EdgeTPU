@@ -60,7 +60,7 @@ RUN cd python-tflite-source/ \
 WORKDIR /notebooks
 RUN wget -P test_data/ https://storage.googleapis.com/cloud-iot-edge-pretrained-models/canned_models/mobilenet_v2_1.0_224_quant_edgetpu.tflite \
     && wget -P test_data/ http://storage.googleapis.com/cloud-iot-edge-pretrained-models/canned_models/imagenet_labels.txt \
-    && tar xzf examples_edgetpu.tar.xz \
+    && tar xvf examples_edgetpu.tar.xz \
     && rm examples_edgetpu.tar.xz 
 
 #copy supervisord files
