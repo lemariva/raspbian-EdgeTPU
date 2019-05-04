@@ -29,15 +29,25 @@ RUN apt-get update \
 #install libraries for camera
 RUN apt-get install -y --no-install-recommends build-essential wget feh pkg-config libjpeg-dev zlib1g-dev \
     libraspberrypi0 libraspberrypi-dev libraspberrypi-doc libraspberrypi-bin libfreetype6-dev libxml2 libopenjp2-7 \
-	python3-dev python3-pip python3-setuptools python3-wheel python3-numpy python3-pil python3-matplotlib python3-zmq
+    libatlas-base-dev libjasper-dev libqtgui4 libqt4-test \
+    python3-dev python3-pip python3-setuptools python3-wheel python3-numpy python3-pil python3-matplotlib python3-zmq
+
+#nodejs for notebooks
+RUN curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash - \
+    && apt-get install -y nodejs
 
 #python libraries
 RUN python3 -m pip install supervisor \
     && python3 -m pip install picamera python-periphery \
-    && python3 -m pip install jupyter cython \
-	&& python3 -m pip install gspread google-auth oauthlib
+    && python3 -m pip install jupyter cython jupyterlab ipywebrtc opencv-python \
+	&& python3 -m pip install google-auth oauthlib imutils
 
-# install live camera libraries
+#jupyter packages
+RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager \
+    && jupyter labextension install jupyter-webrtc \
+    && jupyter nbextension enable --py widgetsnbextension
+
+#install live camera libraries
 RUN apt-get install libgstreamer1.0-0 gstreamer1.0-tools \ 
     gstreamer1.0-plugins-base gstreamer1.0-plugins-good \ 
     gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly v4l-utils
@@ -49,7 +59,10 @@ WORKDIR /opt
 RUN wget https://dl.google.com/coral/edgetpu_api/edgetpu_api_latest.tar.gz -O edgetpu_api.tar.gz --trust-server-names \
     && tar xzf edgetpu_api.tar.gz \
     && rm edgetpu_api.tar.gz
-    
+
+#SSL for jupyter    
+RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mykey.key -out mycert.pem -subj '/O=LeMaRiva|tech/C=DE'
+
 #trick platform recognizer 
 COPY "./conf/install.sh" /opt/edgetpu_api/install.sh
 #installing library
