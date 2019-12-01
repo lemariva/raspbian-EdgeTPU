@@ -4,8 +4,8 @@ from IPython.lib import passwd
 #c = c  # pylint:disable=undefined-variable
 c = get_config()
 c.NotebookApp.ip = '0.0.0.0'
-c.NotebookApp.certfile = u'/opt/mycert.pem'
-c.NotebookApp.keyfile = u'/opt/mykey.key'
+c.NotebookApp.certfile = u'/root/certs/mycert.pem'
+c.NotebookApp.keyfile = u'/root/certs/mykey.key'
 c.NotebookApp.port = int(os.getenv('PORT', 8888))
 c.NotebookApp.open_browser = False
 c.NotebookApp.notebook_dir = '/notebooks'
