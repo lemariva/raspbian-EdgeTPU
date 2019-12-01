@@ -12,7 +12,7 @@ The image contains the following packages/libraries:
 * Other libraries included (check the `Dockerfile`)
 
 A Jupyterlab is available (`https://<ip-address>:8888`) in which you can write code to process images obtained e.g. from the Pi camera. Moreover, two examples using the Coral USB Accelerator are included:
-* `webcam_obj_detector.py`: detects and classifies objects on the fly processing the images taken with the Pi camera. The streaming images are available over http (`<ip address>:8080`).
+* `webcam_obj_detector.py`: detects and classifies objects on the fly processing the images taken with the Pi camera. The streaming images are available over http (`http://<ip address>:8080`).
 * `teachable_jupyter.ipynb`: a notebook to re-train the tflite models to include your objects for image classification. 
 
 To run the container type the following on a Raspberry Pi terminal:
