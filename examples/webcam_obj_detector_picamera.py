@@ -184,11 +184,9 @@ if __name__ == '__main__':
         camera.vflip = VFLIP
         camera.rotation = ROTATION
 
-        camera.start_preview()
-
         try:
             address = ('', 8080)
             server = StreamingServer(address, StreamingHandler)
             server.serve_forever()
-        finally:
-            camera.stop_preview()
+        except:
+            print("error on the server!")
