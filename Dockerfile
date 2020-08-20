@@ -1,15 +1,17 @@
 FROM balenalib/raspberrypi3-debian:buster
-
 RUN [ "cross-build-start" ]
 
+ARG MAYOR_REVISION
+ARG MINOR_REVISION
+ARG BUILD_ID
+
 #labeling
-LABEL mantainer="Mauro Riva <info@lemariva.com>" \
-    org.label-schema.name="raspbian-edgetpu" \
+LABEL org.label-schema.name="raspbian-edgetpu" \
     org.label-schema.description="Docker running Raspbian including Coral Edge-TPU libraries" \
     org.label-schema.url="https://lemariva.com" \
     org.label-schema.vcs-url="https://github.com/lemariva/raspbian-EdgeTPU" \
-    org.label-schema.vendor="LeMaRiva|Tech" \
-    org.label-schema.schema-version="2.1.0"
+    org.label-schema.vendor="LeMaRiva|Tech info@lemariva.com" \
+    org.label-schema.version="${MAYOR_REVISION}.${MINOR_REVISION}.${BUILD_ID}"
 
 ENV READTHEDOCS True
 ENV NODE_OPTIONS "--max-old-space-size=2048"
@@ -25,10 +27,10 @@ RUN apt-get update \
     && mkdir /var/run/sshd
 
 #install libraries for camera and opencv2
-RUN apt-get install -y --no-install-recommends build-essential wget feh pkg-config libjpeg-dev zlib1g-dev git \
+RUN apt-get install -y --no-install-recommends build-essential feh pkg-config libjpeg-dev zlib1g-dev libssl-dev libffi-dev \
     libraspberrypi0 libraspberrypi-dev libraspberrypi-doc libraspberrypi-bin libfreetype6-dev libxml2 libopenjp2-7 \
-    libatlas-base-dev libjasper-dev libqtgui4 libqt4-test libavformat-dev libswscale-dev \
-    python3-dev python3-pip python3-setuptools python3-wheel python3-numpy python3-pil python3-matplotlib python3-zmq 
+    libatlas-base-dev libjasper-dev libqtgui4 libqt4-test libavformat-dev libswscale-dev git wget \
+    python3-dev python3-pip python3-setuptools python3-wheel python3-numpy python3-pil python3-matplotlib python3-zmq python3-opencv
 
 #nodejs for notebooks
 RUN curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash - \
@@ -37,7 +39,7 @@ RUN curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash - \
 #python libraries
 RUN python3 -m pip install  --upgrade --force-reinstall pyzmq \
     && python3 -m pip install supervisor tornado picamera python-periphery \
-    && python3 -m pip install jupyter cython jupyterlab ipywebrtc opencv-python \
+    && python3 -m pip install jupyter cython jupyterlab ipywebrtc \
 	&& python3 -m pip install google-auth oauthlib imutils
 
 #jupyter packages
@@ -56,14 +58,14 @@ RUN echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" |
     && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - \
     && apt-get update \
     && apt-get install -y python3-edgetpu \
-    && wget https://dl.google.com/coral/python/tflite_runtime-1.14.0-cp37-cp37m-linux_armv7l.whl \
-    && pip3 install tflite_runtime-1.14.0-cp37-cp37m-linux_armv7l.whl \
-    && rm tflite_runtime-1.14.0-cp37-cp37m-linux_armv7l.whl
+    && wget https://dl.google.com/coral/python/tflite_runtime-2.1.0.post1-cp37-cp37m-linux_armv7l.whl \
+    && pip3 install tflite_runtime-2.1.0.post1-cp37-cp37m-linux_armv7l.whl \
+    && rm tflite_runtime-2.1.0.post1-cp37-cp37m-linux_armv7l.whl
 
 #SSL for jupyter    
 RUN mkdir /root/certs/ \
     && cd /root/certs/ \
-    && openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mykey.key -out mycert.pem -subj '/O=LeMaRiva|tech/C=DE'
+    && openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mykey.key -out mycert.pem -subj '/O=LeMaRiva|Tech/C=DE'
 
 #copy files
 RUN mkdir /notebooks
