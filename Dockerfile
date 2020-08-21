@@ -74,10 +74,10 @@ COPY ./conf/jupyter_notebook_config.py ${CONFIG_PATH}
 
 #loading pretrained models
 WORKDIR /notebooks
-RUN wget -P test_data/ https://storage.googleapis.com/cloud-iot-edge-pretrained-models/canned_models/mobilenet_v2_1.0_224_quant_edgetpu.tflite \
-    && wget -P test_data/ http://storage.googleapis.com/cloud-iot-edge-pretrained-models/canned_models/imagenet_labels.txt \
-    && wget -P test_data/ https://storage.googleapis.com/cloud-iot-edge-pretrained-models/canned_models/mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite \
-    && wget -P test_data/ https://storage.googleapis.com/cloud-iot-edge-pretrained-models/canned_models/coco_labels.txt
+RUN wget -P test_data/ https://dl.google.com/coral/canned_models/mobilenet_v2_1.0_224_quant_edgetpu.tflite \
+    && wget -P test_data/ https://dl.google.com/coral/canned_models/imagenet_labels.txt \
+    && wget -P test_data/ https://dl.google.com/coral/canned_models/mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite \
+    && wget -P test_data/ https://dl.google.com/coral/canned_models/coco_labels.txt
 
 
 RUN apt-get autoremove \
