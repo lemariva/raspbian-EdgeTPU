@@ -13,6 +13,6 @@ substitutions:  # default values
   _MAYOR_REVISION: "2"
   _MINOR_REVISION: "2"
   _BUILD_ID: "1"
-timeout: 5400s
+timeout: 7200s
 images:
 - 'gcr.io/$PROJECT_ID/raspbian-edgetpu'

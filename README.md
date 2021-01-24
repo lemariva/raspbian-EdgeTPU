@@ -2,8 +2,8 @@
 This Docker image includes the libraries and packages to work with the Coral USB Accelerator (Google). The based image is `balenalib/raspberrypi3-debian:buster`. 
 
 The image contains the following packages/libraries:
-* Python 3.7.3
-* NodeJS 12.13.1
+* Python 3.7.x
+* NodeJS 12.x
 * Python Packages:
     * numpy, matplotlib, pil, zmq
     * supervisor, tornado, picamera, python-periphery
@@ -11,10 +11,15 @@ The image contains the following packages/libraries:
     * google-auth, oauthlib, imutils
 * Other libraries included (check the `Dockerfile`)
 
-A Jupyterlab is available (`https://<ip-address>:8888`) in which you can write code to process images obtained e.g. from the Pi camera. Moreover, two examples using the Coral USB Accelerator are included:
-* `webcam_obj_detector_picamera.py`: detects and classifies objects on the fly processing the images taken with the Pi camera. The streaming images are available over http (`http://<ip address>:8080`). It uses the `picamera` library to get images from the Raspberry Pi Camera (only CSI connector).
+A Jupyterlab is available (`https://<ip-address>:8888`) in which you can write code to process images obtained e.g. from the Pi camera.
+
+An examples using the Coral USB Accelerator is also included:
 * `webcam_obj_detector_opencv.py`: detects and classifies objects on the fly processing the images taken with the Pi camera. The streaming images are available over http (`http://<ip address>:8080`). It uses the `opencv` library to get images from the camera (USB port or CSI connector).
-* `teachable_jupyter.ipynb`: a notebook to re-train the tflite models to include your objects for image classification. 
+
+More examples can be found on the [Coral website](https://coral.ai/examples/). Git is install, thus, you can download the repositories inside jupyter by typing e.g.:
+```
+!git clone https://github.com/google-coral/project-posenet.git
+```
 
 To run the container type the following on a Raspberry Pi terminal:
 ```

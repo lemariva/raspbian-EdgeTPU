@@ -26,59 +26,51 @@ RUN apt-get update \
     && sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd \
     && mkdir /var/run/sshd
 
-#install libraries for camera and opencv2
-RUN apt-get install -y --no-install-recommends build-essential feh pkg-config libjpeg-dev zlib1g-dev libssl-dev libffi-dev \
-    libraspberrypi0 libraspberrypi-dev libraspberrypi-doc libraspberrypi-bin libfreetype6-dev libxml2 libopenjp2-7 \
-    libatlas-base-dev libjasper-dev libqtgui4 libqt4-test libavformat-dev libswscale-dev git wget \
-    python3-dev python3-pip python3-setuptools python3-wheel python3-numpy python3-pil python3-matplotlib python3-zmq python3-opencv
+#copy files
+RUN mkdir /notebooks
+COPY ./examples/ /notebooks/
+COPY ./conf/jupyter_notebook_config.py ${CONFIG_PATH}
+COPY ./conf/requirements.txt /tmp/requirements.txt
 
 #nodejs for notebooks
 RUN curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash - \
     && apt-get install -y nodejs
 
+#install libraries for camera and opencv2
+RUN apt-get install -y --no-install-recommends build-essential git wget feh pkg-config libjpeg-dev zlib1g-dev libssl-dev libffi-dev \
+    libraspberrypi0 libraspberrypi-dev libraspberrypi-doc libraspberrypi-bin libfreetype6-dev libxml2 libopenjp2-7 \
+    libatlas-base-dev libjasper-dev libqtgui4 libqt4-test libavformat-dev libswscale-dev  \
+    python3-dev python3-pip python3-setuptools python3-wheel python3-pil python3-zmq python3-opencv \ 
+    python3-matplotlib python3-numpy python3-scipy 
+
 #python libraries
-RUN python3 -m pip install  --upgrade --force-reinstall pyzmq \
-    && python3 -m pip install supervisor tornado picamera python-periphery \
-    && python3 -m pip install jupyter cython jupyterlab ipywebrtc \
-	&& python3 -m pip install google-auth oauthlib imutils
+RUN python3 -m pip install --upgrade pip
+RUN python3 -m pip install --ignore-installed -r /tmp/requirements.txt
 
 #jupyter packages
-RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager \
-    && jupyter labextension install jupyter-webrtc \
-    && jupyter nbextension enable --py widgetsnbextension
+#RUN NODE_OPTIONS=--max_old_space_size=2048 jupyter nbextension enable --py widgetsnbextension \
+#    && NODE_OPTIONS=--max_old_space_size=2048 jupyter labextension install --minimize=False @jupyter-widgets/jupyterlab-manager \
+#    && NODE_OPTIONS=--max_old_space_size=2048 jupyter labextension install --minimize=False jupyter-webrtc
 
 #install live camera libraries
 RUN apt-get install libgstreamer1.0-0 gstreamer1.0-tools \ 
-    gstreamer1.0-plugins-base gstreamer1.0-plugins-good \ 
+    gstreamer1.0-plugins-base gstreamer1.0-plugins-good  \ 
     gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly v4l-utils
-
 
 #downloading library file 
 RUN echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" | sudo tee /etc/apt/sources.list.d/coral-edgetpu.list \
+    && echo "deb https://packages.cloud.google.com/apt coral-cloud-stable main" | sudo tee /etc/apt/sources.list.d/coral-cloud.list \
     && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - \
     && apt-get update \
-    && apt-get install -y python3-edgetpu \
-    && wget https://dl.google.com/coral/python/tflite_runtime-2.1.0.post1-cp37-cp37m-linux_armv7l.whl \
-    && pip3 install tflite_runtime-2.1.0.post1-cp37-cp37m-linux_armv7l.whl \
-    && rm tflite_runtime-2.1.0.post1-cp37-cp37m-linux_armv7l.whl
+    && apt-get install -y python3-pycoral python3-tflite-runtime
 
 #SSL for jupyter    
 RUN mkdir /root/certs/ \
     && cd /root/certs/ \
     && openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mykey.key -out mycert.pem -subj '/O=LeMaRiva|Tech/C=DE'
 
-#copy files
-RUN mkdir /notebooks
-COPY ./examples/ /notebooks/
-COPY ./conf/jupyter_notebook_config.py ${CONFIG_PATH}
-
 #loading pretrained models
 WORKDIR /notebooks
-RUN wget -P test_data/ https://dl.google.com/coral/canned_models/mobilenet_v2_1.0_224_quant_edgetpu.tflite \
-    && wget -P test_data/ https://dl.google.com/coral/canned_models/imagenet_labels.txt \
-    && wget -P test_data/ https://dl.google.com/coral/canned_models/mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite \
-    && wget -P test_data/ https://dl.google.com/coral/canned_models/coco_labels.txt
-
 
 RUN apt-get autoremove \
     && rm -rf /tmp/* \
