@@ -6,7 +6,7 @@ imutils==0.5.4
 python-periphery==2.2.0
 cython==0.29.21
 jupyter==1.0.0
-jupyterlab==3.0.5
+jupyterlab==3.0.17
 ipywebrtc==0.5.0
 google-auth==1.24.0
 oauthlib==3.1.0
